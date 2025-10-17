@@ -1,0 +1,145 @@
+{
+  "version": "2.1.0",
+  "$schema": "https://schemastore.azurewebsites.net/schemas/json/sarif-2.1.0-rtm.5.json",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "VB Vulnerability Scanner",
+          "informationUri": "https://example.local/vb-scanner",
+          "rules": [
+            {
+              "id": "VB_HARDCODED_PASSWORD",
+              "name": "Hardcoded Password",
+              "shortDescription": {
+                "text": "Hardcoded Password"
+              },
+              "fullDescription": {
+                "text": "Possible hardcoded password in VB code."
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              }
+            },
+            {
+              "id": "VB_EVAL_USAGE",
+              "name": "Unsafe Eval Usage",
+              "shortDescription": {
+                "text": "Unsafe Eval Usage"
+              },
+              "fullDescription": {
+                "text": "Eval can execute arbitrary code."
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              }
+            },
+            {
+              "id": "VB_SQL_CONCAT",
+              "name": "SQL Concatenation / Injection Risk",
+              "shortDescription": {
+                "text": "SQL Concatenation / Injection Risk"
+              },
+              "fullDescription": {
+                "text": "Dynamic SQL constructed via string concatenation. May be vulnerable to injection."
+              },
+              "defaultConfiguration": {
+                "level": "warning"
+              }
+            },
+            {
+              "id": "VB_SHELL_EXEC",
+              "name": "Shell Execution",
+              "shortDescription": {
+                "text": "Shell Execution"
+              },
+              "fullDescription": {
+                "text": "Shell or WScript usage detected \u2014 arbitrary command execution risk."
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              }
+            },
+            {
+              "id": "VB_FILESYSTEM",
+              "name": "File System Access",
+              "shortDescription": {
+                "text": "File System Access"
+              },
+              "fullDescription": {
+                "text": "Direct file system access; may expose sensitive data."
+              },
+              "defaultConfiguration": {
+                "level": "warning"
+              }
+            },
+            {
+              "id": "VB_HTTP_URL",
+              "name": "Insecure URL (HTTP)",
+              "shortDescription": {
+                "text": "Insecure URL (HTTP)"
+              },
+              "fullDescription": {
+                "text": "Plain HTTP URL found \u2014 consider using HTTPS."
+              },
+              "defaultConfiguration": {
+                "level": "note"
+              }
+            }
+          ]
+        }
+      },
+      "results": [
+        {
+          "ruleId": "VB_SQL_CONCAT",
+          "ruleIndex": 2,
+          "level": "warning",
+          "message": {
+            "text": "SQL Concatenation / Injection Risk \u2014 \"SELECT * FROM Users WHERE Username = '\" & username"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "examples/vb_exports/module1.bas"
+                },
+                "region": {
+                  "startLine": 9,
+                  "snippet": {
+                    "text": "\n    Dim sql As String\n    sql = \"SELECT * FROM Users WHERE Username = '\" & username & \"'\"  ' SQL concatenation / injection risk\n\n    Dim url As String"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "VB_SQL_CONCAT",
+          "ruleIndex": 2,
+          "level": "warning",
+          "message": {
+            "text": "SQL Concatenation / Injection Risk \u2014 \"SELECT * FROM Accounts WHERE Owner = '\" & u"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "examples/vb_exports/form_login.frm"
+                },
+                "region": {
+                  "startLine": 19,
+                  "snippet": {
+                    "text": "    ' Dynamic sql using a helper (simulate custom ExecuteSql)\n    Dim q As String\n    q = \"SELECT * FROM Accounts WHERE Owner = '\" & u & \"'\"\n    Call ExecuteSql(q)   ' pattern includes \"ExecuteSql\" concatenation variant\nEnd Sub"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "invocation": {
+        "timestamp": "2025-10-17T14:10:33.706489Z"
+      }
+    }
+  ]
+}
