@@ -12,10 +12,10 @@ Run:
 ```bash
 
 # console-only report
-python3 src/scan_vb_vulnerabilities.py ./examples/vb_exports rules.yaml
+python3 src/scan_vb_vulnerabilities.py ./examples/vb_exports rules/rules.yaml
 
 # console + SARIF file
-python3 src/scan_vb_vulnerabilities.py ./examples/vb_exports rules.yaml --sarif vb_findings.sarif.json
+python3 src/scan_vb_vulnerabilities.py ./examples/vb_exports rules/rules.yaml --sarif vb_findings.sarif.json
 
 ```
 
