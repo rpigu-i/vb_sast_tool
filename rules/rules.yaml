@@ -1,30 +1,35 @@
-- name: Hardcoded Password
-  pattern: '(password\s*=\s*["\'].*["\'])'
+- id: VB_HARDCODED_PASSWORD
+  name: Hardcoded Password
+  pattern: '(password\s*[:=]\s*["\'].*?["\'])'
   severity: high
   description: "Possible hardcoded password in VB code."
 
-- name: Unsafe Eval Usage
+- id: VB_EVAL_USAGE
+  name: Unsafe Eval Usage
   pattern: '\bEval\s*\('
   severity: high
-  description: "Eval can execute arbitrary code. Consider removing or sandboxing."
+  description: "Eval can execute arbitrary code."
 
-- name: SQL Injection Risk
-  pattern: '("SELECT\s+.*"&\s*\w+)'
+- id: VB_SQL_CONCAT
+  name: SQL Concatenation / Injection Risk
+  pattern: '("SELECT\b.*?"\s*&\s*\w+)|(\bExecuteSql\b.*&)'
   severity: medium
-  description: "Dynamic SQL concatenation may allow SQL injection."
+  description: "Dynamic SQL constructed via string concatenation. May be vulnerable to injection."
 
-- name: Shell Execution
+- id: VB_SHELL_EXEC
+  name: Shell Execution
   pattern: '\b(Shell|CreateObject\s*\(\s*["\']WScript\.Shell["\'])'
   severity: high
-  description: "Shell command execution detected — potential for arbitrary code execution."
+  description: "Shell or WScript usage detected — arbitrary command execution risk."
 
-- name: File System Access
-  pattern: '\b(FileSystemObject|Open\s+".*")'
+- id: VB_FILESYSTEM
+  name: File System Access
+  pattern: '\b(FileSystemObject|Open\s+["\'].*["\'])'
   severity: medium
-  description: "Direct file system manipulation — check for improper access control."
+  description: "Direct file system access; may expose sensitive data."
 
-- name: Insecure URL
-  pattern: 'http://'
+- id: VB_HTTP_URL
+  name: Insecure URL (HTTP)
+  pattern: 'http://[^\s"\'<>]+'
   severity: low
   description: "Plain HTTP URL found — consider using HTTPS."
-
