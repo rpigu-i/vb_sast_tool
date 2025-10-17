@@ -1,0 +1,30 @@
+- name: Hardcoded Password
+  pattern: '(password\s*=\s*["\'].*["\'])'
+  severity: high
+  description: "Possible hardcoded password in VB code."
+
+- name: Unsafe Eval Usage
+  pattern: '\bEval\s*\('
+  severity: high
+  description: "Eval can execute arbitrary code. Consider removing or sandboxing."
+
+- name: SQL Injection Risk
+  pattern: '("SELECT\s+.*"&\s*\w+)'
+  severity: medium
+  description: "Dynamic SQL concatenation may allow SQL injection."
+
+- name: Shell Execution
+  pattern: '\b(Shell|CreateObject\s*\(\s*["\']WScript\.Shell["\'])'
+  severity: high
+  description: "Shell command execution detected — potential for arbitrary code execution."
+
+- name: File System Access
+  pattern: '\b(FileSystemObject|Open\s+".*")'
+  severity: medium
+  description: "Direct file system manipulation — check for improper access control."
+
+- name: Insecure URL
+  pattern: 'http://'
+  severity: low
+  description: "Plain HTTP URL found — consider using HTTPS."
+
