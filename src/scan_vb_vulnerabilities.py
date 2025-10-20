@@ -29,12 +29,16 @@ SEVERITY_TO_SARIF = {
 }
 
 def load_rules(yaml_path):
-    """Load vulnerability detection rules from a YAML file."""
+    """
+    Load vulnerability detection rules from a YAML file.
+
+    Then normalize minimal rule fields and compile regex
+    for execution. 
+    """
     with open(yaml_path, "r", encoding="utf-8") as f:
         rules = yaml.safe_load(f)
     if not isinstance(rules, list):
         raise ValueError("Rules YAML must contain a list of rules.")
-    # Normalize minimal rule fields and compile regex
     normalized = []
     for i, r in enumerate(rules):
         if not r.get("pattern"):
@@ -54,21 +58,25 @@ def load_rules(yaml_path):
     return normalized
 
 def find_line_and_snippet(text, start, end, context_lines=2):
-    """Given start/end indexes, return 1-based line number and a small snippet (with context)."""
-    # line number
+    """
+    Given start/end indexes, return 1-based line number and 
+    a small snippet (with context).
+   
+    """
     start_line = text.count("\n", 0, start) + 1
-    # extract snippet by lines
     lines = text.splitlines()
     line_idx = start_line - 1
     start_ctx = max(0, line_idx - context_lines)
     end_ctx = min(len(lines)-1, line_idx + context_lines)
     snippet = "\n".join(lines[start_ctx:end_ctx+1])
-    # relative line in snippet:
     relative_line = line_idx - start_ctx + 1
     return start_line, snippet, relative_line
 
 def scan_file(file_path, rules):
-    """Scan a single VB file for vulnerabilities based on the rules."""
+    """
+    Scan a single VB file for vulnerabilities 
+    based on the rules.
+    """
     findings = []
     text = Path(file_path).read_text(errors="ignore")
     for rule in rules:
@@ -92,8 +100,11 @@ def scan_file(file_path, rules):
     return findings
 
 def scan_directory(directory, rules):
-    """Recursively scan .bas, .vb, .frm, .cls files in a directory."""
-    exts = ("*.vb", "*.bas", "*.frm", "*.cls", "*.txt")  # common exports
+    """
+    Recursively scan .bas, .vb, .frm, .cls files 
+    in a directory. These represent common exports.
+    """
+    exts = ("*.vb", "*.bas", "*.frm", "*.cls", "*.txt")
     all_findings = []
     p = Path(directory)
     for ext in exts:
@@ -102,7 +113,12 @@ def scan_directory(directory, rules):
     return all_findings
 
 def report_console(findings):
-    """Print human-friendly report to console."""
+    """
+    Print human-friendly report to console.
+
+    Outout will show the snippet with an indicator arrow 
+    at the matched line inside snippet
+    """
     if not findings:
         print("No vulnerabilities found.")
         return
@@ -114,7 +130,6 @@ def report_console(findings):
         if f['description']:
             print(f"  Description: {f['description']}")
         print("  Match snippet:")
-        # show the snippet with an indicator arrow at the matched line inside snippet
         snippet_lines = f['snippet'].splitlines()
         for i, ln in enumerate(snippet_lines, start=1):
             prefix = " -> " if i == f['snippet_line'] else "    "
@@ -122,8 +137,11 @@ def report_console(findings):
         print("-" * 72)
 
 def build_sarif(findings, rules, tool_name="VB Vulnerability Scanner"):
-    """Construct a SARIF v2.1.0 object from findings."""
-    # Build rules list for sarif 'tool'
+    """
+    Construct a SARIF v2.1.0 object from findings.
+
+    Build rules list for sarif 'tool'
+    """
     sarif_rules = []
     rule_by_id = {r["id"]: r for r in rules}
     for rid, r in rule_by_id.items():
