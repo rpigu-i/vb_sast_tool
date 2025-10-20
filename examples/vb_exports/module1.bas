@@ -15,4 +15,13 @@ Public Sub Demo()
     x = Eval("2+2")  ' Eval usage
 
     Shell "cmd.exe /c dir", vbHide  ' Shell execution
+
+Line1:
+    y = "Some random string"
+    GoTo OutputLine
+
+OutPutLine:
+    Debug.WriteLine(y)
+
 End Sub
+

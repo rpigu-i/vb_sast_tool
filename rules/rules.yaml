@@ -40,3 +40,9 @@
   severity: low
   description: "Plain HTTP URL found — consider using HTTPS."
 
+- id: VB_GOTO_STATEMENT
+  name: Use of GoTo statement
+  pattern: |
+    \bGoTo\b
+  severity: info
+  description: "GoTo statements result in unstructured control flows"
