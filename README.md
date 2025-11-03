@@ -32,3 +32,15 @@ Future examples in this repository will include an approach that leverages:
 3. Taint flow/Control Flow Analysis
 4. Abstract Syntax Trees
 
+# Adding a Rule
+
+To add a rule to the YAML file, use the following format:
+
+```yaml
+- id: VB_EVAL_USAGE
+  name: Unsafe Eval Usage
+  pattern: |
+    \bEval\s*\(
+  severity: high
+  description: "Eval can execute arbitrary code."
+```
