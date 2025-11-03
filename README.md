@@ -54,6 +54,26 @@ The `examples/vb_exports` directory contains an example VB project, or you can e
 
 After the SARIF file is written, you can open it with tools that understand SARIF (e.g., GitHub Code Scanning, VS Code SARIF viewer extensions, or other CI tools).
 
+## Testing
+
+The project includes a comprehensive test suite that validates each pattern in the rules YAML file:
+
+```bash
+# Run all tests
+poetry run pytest tests/
+
+# Run tests with verbose output
+poetry run pytest tests/ -v
+
+# Run a specific test class
+poetry run pytest tests/test_rules.py::TestEvalUsage -v
+```
+
+The test suite includes:
+- Unit tests for each rule pattern (VB_HARDCODED_PASSWORD, VB_EVAL_USAGE, VB_SQL_CONCAT, VB_SHELL_EXEC, VB_FILESYSTEM, VB_HTTP_URL, VB_GOTO_STATEMENT)
+- Integration tests using the example VB files
+- Tests to verify all rules are properly loaded and configured
+
 # Approach
 
 This example uses a purely regex approach currently. Here signatures in the YAML rules file are scanned against the flat files, and a SARIF output is generated.
@@ -72,8 +92,10 @@ To add a rule to the YAML file, use the following format:
 ```yaml
 - id: VB_EVAL_USAGE
   name: Unsafe Eval Usage
-  pattern: |
+  pattern: >-
     \bEval\s*\(
   severity: high
   description: "Eval can execute arbitrary code."
 ```
+
+**Note:** Use `>-` for the pattern field to ensure the pattern string doesn't include trailing newlines that could cause regex matching issues.
