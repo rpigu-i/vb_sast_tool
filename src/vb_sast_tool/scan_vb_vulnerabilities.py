@@ -5,11 +5,14 @@ VB Vulnerability Scanner with SARIF output
 Scans Visual Basic / Access DB code files using signatures loaded from a YAML rule file.
 
 Usage:
-    python3 src/scan_vb_vulnerabilities.py <VB_folder> <rules.yaml> [--sarif results.sarif.json]
+    vb-scan <VB_folder> <rules.yaml> [--sarif results.sarif.json]
 
 Examples:
-    python3 src/scan_vb_vulnerabilities.py ./vb_exports rules.yaml
-    python3 src/scan_vb_vulnerabilities.py ./vb_exports rules.yaml --sarif vb_findings.sarif.json
+    vb-scan ./examples/vb_exports rules/rules.yaml
+    vb-scan ./examples/vb_exports rules/rules.yaml --sarif vb_findings.sarif.json
+
+Alternative usage (direct Python execution):
+    poetry run python src/vb_sast_tool/scan_vb_vulnerabilities.py ./examples/vb_exports rules/rules.yaml
 """
 import re
 import yaml
@@ -109,7 +112,7 @@ def report_console(findings):
     """
     Print human-friendly report to console.
 
-    Outout will show the snippet with an indicator arrow 
+    Output will show the snippet with an indicator arrow 
     at the matched line inside snippet
     """
     if not findings:
