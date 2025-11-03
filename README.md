@@ -20,3 +20,15 @@ python3 src/scan_vb_vulnerabilities.py ./examples/vb_exports rules/rules.yaml --
 ```
 
 After the SARIF file is written you can open it with tools that understand SARIF (e.g., GitHub Code Scanning, VS Code SARIF viewer extensions, or other CI tools).
+
+# Approach
+
+This example uses a purely regex approach currently. Here signatures in the YAML rules file are scanned against the flat files, and a SARIF output is generated.
+
+Future examples in this repository will include an approach that leverages:
+
+1. Taints
+2. Sinks
+3. Taint flow/Control Flow Analysis
+4. Abstract Syntax Trees
+
