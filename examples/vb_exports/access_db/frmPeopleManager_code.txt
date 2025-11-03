@@ -1,0 +1,35 @@
+Option Compare Database
+Option Explicit
+
+Private Sub Form_Load()
+    On Error Resume Next
+    CreatePeopleTableIfMissing
+    On Error GoTo 0
+    RefreshPeopleList
+End Sub
+
+Private Sub btnAdd_Click()
+    On Error GoTo EH
+    AddPerson Nz(Me.txtFirstName.Value, ""), Nz(Me.txtLastName.Value, ""), Nz(Me.txtAge.Value, Null)
+    Me.txtFirstName = Null
+    Me.txtLastName = Null
+    Me.txtAge = Null
+    RefreshPeopleList
+    Exit Sub
+EH:
+    MsgBox "Could not add person: " & Err.Description, vbExclamation
+End Sub
+
+Private Sub btnList_Click()
+    RefreshPeopleList
+End Sub
+
+Private Sub RefreshPeopleList()
+    Me.lstPeople.RowSourceType = "Table/Query"
+    Me.lstPeople.RowSource = "SELECT ID, FirstName, LastName, Age FROM People ORDER BY LastName, FirstName;"
+    ' Hide the ID column and size the others after form opens
+    On Error Resume Next
+    Me.lstPeople.ColumnCount = 4
+    Me.lstPeople.ColumnWidths = "0cm;5cm;5cm;3cm" ' in cm; Access will convert as needed
+    On Error GoTo 0
+End Sub
