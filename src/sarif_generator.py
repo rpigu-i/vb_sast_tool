@@ -36,7 +36,7 @@ def build_sarif(findings, rules, tool_name="VB Vulnerability Scanner"):
             "name": r["name"],
             "shortDescription": {"text": r["name"]},
             "fullDescription": {"text": r.get("description", "")},
-            "defaultConfiguration": {"level": SEVERITY_TO_SARIF.get(r.get("severity","info"), "note")}
+            "defaultConfiguration": {"level": SEVERITY_TO_SARIF.get(r.get("severity", "info"), "note")}
         })
 
     # Build results list from findings
