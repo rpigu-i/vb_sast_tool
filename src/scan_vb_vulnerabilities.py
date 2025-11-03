@@ -17,16 +17,9 @@ import sys
 import json
 import argparse
 from pathlib import Path
-from datetime import datetime
+from sarif_generator import build_sarif
 
 # -------------------- Helpers --------------------
-
-SEVERITY_TO_SARIF = {
-    "high": "error",
-    "medium": "warning",
-    "low": "note",
-    "info": "note"
-}
 
 def load_rules(yaml_path):
     """
@@ -135,68 +128,6 @@ def report_console(findings):
             prefix = " -> " if i == f['snippet_line'] else "    "
             print(f"{prefix}{ln}")
         print("-" * 72)
-
-def build_sarif(findings, rules, tool_name="VB Vulnerability Scanner"):
-    """
-    Construct a SARIF v2.1.0 object from findings.
-
-    Build rules list for sarif 'tool'
-    """
-    sarif_rules = []
-    rule_by_id = {r["id"]: r for r in rules}
-    for rid, r in rule_by_id.items():
-        sarif_rules.append({
-            "id": rid,
-            "name": r["name"],
-            "shortDescription": {"text": r["name"]},
-            "fullDescription": {"text": r.get("description", "")},
-            "defaultConfiguration": {"level": SEVERITY_TO_SARIF.get(r.get("severity","info"), "note")}
-        })
-
-    sarif_results = []
-    for f in findings:
-        level = SEVERITY_TO_SARIF.get(f["severity"], "note")
-        message_text = f"{f['rule_name']} — {f['match']}"
-        # create result entry
-        sarif_results.append({
-            "ruleId": f["rule_id"],
-            "ruleIndex": next((i for i, rr in enumerate(sarif_rules) if rr["id"] == f["rule_id"]), 0),
-            "level": level,
-            "message": {"text": message_text},
-            "locations": [
-                {
-                    "physicalLocation": {
-                        "artifactLocation": {"uri": f["file"]},
-                        "region": {
-                            "startLine": f["line"],
-                            # optionally include snippet or char offsets
-                            "snippet": {"text": f["snippet"]}
-                        }
-                    }
-                }
-            ]
-        })
-
-    sarif = {
-        "version": "2.1.0",
-        "$schema": "https://schemastore.azurewebsites.net/schemas/json/sarif-2.1.0-rtm.5.json",
-        "runs": [
-            {
-                "tool": {
-                    "driver": {
-                        "name": tool_name,
-                        "informationUri": "https://example.local/vb-scanner",
-                        "rules": sarif_rules
-                    }
-                },
-                "results": sarif_results,
-                "invocation": {
-                    "timestamp": datetime.utcnow().isoformat() + "Z"
-                }
-            }
-        ]
-    }
-    return sarif
 
 # -------------------- CLI / Main --------------------
 
