@@ -16,3 +16,8 @@ vb-scan = "vb_sast_tool.scan_vb_vulnerabilities:main"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[dependency-groups]
+dev = [
+    "pytest (<8)"
+]

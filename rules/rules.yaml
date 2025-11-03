@@ -1,48 +1,48 @@
 - id: VB_HARDCODED_PASSWORD
   name: Hardcoded Password
-  pattern: |
+  pattern: >-
     (password\s*[:=]\s*["'].*?["'])
   severity: high
   description: "Possible hardcoded password in VB code."
 
 - id: VB_EVAL_USAGE
   name: Unsafe Eval Usage
-  pattern: |
+  pattern: >-
     \bEval\s*\(
   severity: high
   description: "Eval can execute arbitrary code."
 
 - id: VB_SQL_CONCAT
   name: SQL Concatenation / Injection Risk
-  pattern: |
+  pattern: >-
     ("SELECT\b.*?"\s*&\s*\w+)|(\bExecuteSql\b.*&)
   severity: medium
   description: "Dynamic SQL constructed via string concatenation. May be vulnerable to injection."
 
 - id: VB_SHELL_EXEC
   name: Shell Execution
-  pattern: |
+  pattern: >-
     \b(Shell|CreateObject\s*\(\s*["']WScript\.Shell["'])
   severity: high
   description: "Shell or WScript usage detected — arbitrary command execution risk."
 
 - id: VB_FILESYSTEM
   name: File System Access
-  pattern: |
+  pattern: >-
     \b(FileSystemObject|Open\s+["'].*["'])
   severity: medium
   description: "Direct file system access; may expose sensitive data."
 
 - id: VB_HTTP_URL
   name: Insecure URL (HTTP)
-  pattern: |
+  pattern: >-
     http://[^\s"'<>]+
   severity: low
   description: "Plain HTTP URL found — consider using HTTPS."
 
 - id: VB_GOTO_STATEMENT
   name: Use of GoTo statement
-  pattern: |
+  pattern: >-
     \bGoTo\b
   severity: info
   description: "GoTo statements result in unstructured control flows"
