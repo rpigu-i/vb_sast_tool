@@ -57,7 +57,6 @@ def find_line_and_snippet(text, start, end, context_lines=2):
     """
     Given start/end indexes, return 1-based line number and 
     a small snippet (with context).
-   
     """
     start_line = text.count("\n", 0, start) + 1
     lines = text.splitlines()
@@ -113,7 +112,7 @@ def report_console(findings):
     Print human-friendly report to console.
 
     Output will show the snippet with an indicator arrow 
-    at the matched line inside snippet
+    at the matched line inside the snippet.
     """
     if not findings:
         print("No vulnerabilities found.")
@@ -149,7 +148,7 @@ def main():
         sarif_obj = build_sarif(findings, rules, tool_name="VB Vulnerability Scanner")
         with open(args.sarif, "w", encoding="utf-8") as fh:
             json.dump(sarif_obj, fh, indent=2)
-        print(f"\n SARIF output written to: {args.sarif}")
+        print(f"\nSARIF output written to: {args.sarif}")
 
 if __name__ == "__main__":
     main()
