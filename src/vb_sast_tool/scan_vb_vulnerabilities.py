@@ -145,7 +145,7 @@ def main():
     report_console(findings)
 
     if args.sarif:
-        sarif_obj = build_sarif(findings, rules, tool_name="VB Vulnerability Scanner")
+        sarif_obj = build_sarif(findings, rules, tool_name="QaD VB Vulnerability Scanner")
         with open(args.sarif, "w", encoding="utf-8") as fh:
             json.dump(sarif_obj, fh, indent=2)
         print(f"\nSARIF output written to: {args.sarif}")
