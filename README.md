@@ -1,4 +1,4 @@
-# VB SAST Tool - Scan for VB Vulnerabilities 
+# Quick and Dirty VB SAST Tool - Scan for VB Vulnerabilities 
 Example Python tool for scanning flat files containing VB for vulnerabilities.
 
 ## Installation
