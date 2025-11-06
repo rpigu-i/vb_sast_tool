@@ -46,3 +46,10 @@
     \bGoTo\b
   severity: info
   description: "GoTo statements result in unstructured control flows"
+
+- id: VB_GOSUB_STATEMENT
+  name: Use of GoSub statement
+  pattern: >-
+    \bGoSub\b
+  severity: info
+  description: "GoSub statements result in unstructured control flows"

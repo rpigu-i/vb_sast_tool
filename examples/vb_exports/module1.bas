@@ -25,3 +25,12 @@ OutPutLine:
 
 End Sub
 
+Public Sub Demo2()
+    GoSub CallMeSubRoutine
+    Exit Sub
+
+CallMeSubRoutine
+    Dim y
+    y = Eval("3+2")
+
+End Sub
