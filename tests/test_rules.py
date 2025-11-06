@@ -221,6 +221,37 @@ Line2:
         matches = list(rule['regex'].finditer(code))
         assert len(matches) > 0, "Should detect GoTo with labels"
 
+class TestGosubStatement:
+    """Tests for VB_GOTO_STATEMENT rule"""
+    
+    def test_gosub_statement(self, rule_by_id):
+        """Test detection of GoSub statement"""
+        code = 'GoSub ErrorHandler'
+        rule = rule_by_id['VB_GOSUB_STATEMENT']
+        matches = list(rule['regex'].finditer(code))
+        assert len(matches) > 0, "Should detect GoSub statement"
+    
+    def test_gosub_case_insensitive(self, rule_by_id):
+        """Test detection is case-insensitive"""
+        code = 'gosub NextLine'
+        rule = rule_by_id['VB_GOSUB_STATEMENT']
+        matches = list(rule['regex'].finditer(code))
+        assert len(matches) > 0, "Should detect gosub in lowercase"
+    
+    def test_gosub_with_label(self, rule_by_id):
+        """Test detection of GoSub with various labels"""
+        code = '''
+Sub BadProcedure()
+    GoSub BadSubRoutine
+    Exit Sub
+BadSubRoutine:
+    y = 2
+    Return
+End Sub
+'''
+        rule = rule_by_id['VB_GOSUB_STATEMENT']
+        matches = list(rule['regex'].finditer(code))
+        assert len(matches) > 0, "Should detect GoSub with labels"
 
 class TestExampleFiles:
     """Integration tests using the example VB files"""
@@ -256,8 +287,8 @@ class TestAllRulesPresent:
     """Test that all expected rules are loaded"""
     
     def test_all_rules_loaded(self, rules):
-        """Verify all 7 rules are loaded from the YAML file"""
-        assert len(rules) == 7, "Should load exactly 7 rules from rules.yaml"
+        """Verify all 8 rules are loaded from the YAML file"""
+        assert len(rules) == 8, "Should load exactly 8 rules from rules.yaml"
     
     def test_required_rule_ids_present(self, rule_by_id):
         """Verify all expected rule IDs are present"""
@@ -268,7 +299,8 @@ class TestAllRulesPresent:
             'VB_SHELL_EXEC',
             'VB_FILESYSTEM',
             'VB_HTTP_URL',
-            'VB_GOTO_STATEMENT'
+            'VB_GOTO_STATEMENT',
+            'VB_GOSUB_STATEMENT'
         ]
         
         for rule_id in expected_ids:
