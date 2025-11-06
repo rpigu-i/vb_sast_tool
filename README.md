@@ -9,7 +9,14 @@ ________        .__        __                        .___ ________  .__         
                                                                                                                                               
 # Quick and Dirty (QaD) 
 ### VB SAST Tool - Scan for VB Vulnerabilities 
-Example Python tool for scanning flat files containing VB for vulnerabilities.
+A Python based SAST tool that scans flat files containing VBA and VB6 code for vulnerability and code smell patterns. 
+
+There's plenty of legacy VB6 and VBA code out there. Sometimes you need a quick and dirty pass of the files for compliance 
+and security reasons but don't have an expensive commerical tool that supports the language.
+
+ Well in such a case, this is the tool for you. It's not sophisticated, it might be a little noisy, but it gets the job 
+ done in a pinch. You also get a SARIF file export you can pump into GitHub Advanced Security and other SARIF compatible platforms. 
+
 
 ## Installation
 
