@@ -53,3 +53,10 @@
     \bGoSub\b
   severity: info
   description: "GoSub statements result in unstructured control flows"
+
+- id: VB_HARDCODED_IP
+  name: Hardcoded IP Address
+  pattern: >-
+    ["']\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}["']
+  severity: low
+  description: "Hardcoded IP address found — consider using configuration or DNS names."
