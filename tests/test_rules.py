@@ -253,6 +253,44 @@ End Sub
         matches = list(rule['regex'].finditer(code))
         assert len(matches) > 0, "Should detect GoSub with labels"
 
+
+class TestHardcodedIP:
+    """Tests for VB_HARDCODED_IP rule"""
+    
+    def test_hardcoded_ip_double_quotes(self, rule_by_id):
+        """Test detection of hardcoded IP address with double quotes"""
+        code = 'sockMain.RemoteHost = "192.168.11.11"'
+        rule = rule_by_id['VB_HARDCODED_IP']
+        matches = list(rule['regex'].finditer(code))
+        assert len(matches) > 0, "Should detect hardcoded IP with double quotes"
+    
+    def test_hardcoded_ip_single_quotes(self, rule_by_id):
+        """Test detection of hardcoded IP address with single quotes"""
+        code = "serverIP = '10.0.0.1'"
+        rule = rule_by_id['VB_HARDCODED_IP']
+        matches = list(rule['regex'].finditer(code))
+        assert len(matches) > 0, "Should detect hardcoded IP with single quotes"
+    
+    def test_hardcoded_ip_various_ranges(self, rule_by_id):
+        """Test detection of IP addresses in various ranges"""
+        test_cases = [
+            'ip = "192.168.1.1"',
+            'address = "10.20.30.40"',
+            'host = "172.16.0.1"',
+            'server = "8.8.8.8"',
+        ]
+        rule = rule_by_id['VB_HARDCODED_IP']
+        for code in test_cases:
+            matches = list(rule['regex'].finditer(code))
+            assert len(matches) > 0, f"Should detect IP in: {code}"
+    
+    def test_hardcoded_ip_not_detected_without_quotes(self, rule_by_id):
+        """Test that IP addresses without quotes are not detected"""
+        code = 'comment about 192.168.1.1 without quotes'
+        rule = rule_by_id['VB_HARDCODED_IP']
+        matches = list(rule['regex'].finditer(code))
+        assert len(matches) == 0, "Should NOT detect IP without quotes"
+
 class TestExampleFiles:
     """Integration tests using the example VB files"""
     
@@ -287,8 +325,8 @@ class TestAllRulesPresent:
     """Test that all expected rules are loaded"""
     
     def test_all_rules_loaded(self, rules):
-        """Verify all 8 rules are loaded from the YAML file"""
-        assert len(rules) == 8, "Should load exactly 8 rules from rules.yaml"
+        """Verify all 9 rules are loaded from the YAML file"""
+        assert len(rules) == 9, "Should load exactly 9 rules from rules.yaml"
     
     def test_required_rule_ids_present(self, rule_by_id):
         """Verify all expected rule IDs are present"""
@@ -300,7 +338,8 @@ class TestAllRulesPresent:
             'VB_FILESYSTEM',
             'VB_HTTP_URL',
             'VB_GOTO_STATEMENT',
-            'VB_GOSUB_STATEMENT'
+            'VB_GOSUB_STATEMENT',
+            'VB_HARDCODED_IP'
         ]
         
         for rule_id in expected_ids:
