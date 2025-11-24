@@ -17,10 +17,78 @@ and security reasons but don't have an expensive commerical tool that supports t
  Well in such a case, this is the tool for you. It's not sophisticated, it might be a little noisy, but it gets the job 
  done in a pinch. You also get a SARIF file export you can pump into GitHub Advanced Security and other SARIF compatible platforms. 
 
+## Usage as a GitHub Action
 
-## Installation
+This tool is available as a reusable GitHub Action that can be integrated into your CI/CD workflows. The action automatically scans your VB/VBA code and uploads the results to GitHub Advanced Security Code Scanning.
 
-This tool is packaged with Poetry and can be installed as a Python package.
+### Basic Usage
+
+Add the following to your workflow file (e.g., `.github/workflows/vb-security-scan.yml`):
+
+```yaml
+name: VB Security Scan
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+permissions:
+  contents: read
+  security-events: write  # Required for uploading SARIF to Code Scanning
+
+jobs:
+  vb-sast:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Run QaD VB SAST Scanner
+        uses: rpigu-i/QaD_vb_sast_tool@main
+        with:
+          scan-path: './src'  # Path to your VB/VBA files
+```
+
+### Advanced Usage
+
+```yaml
+- name: Run QaD VB SAST Scanner
+  uses: rpigu-i/QaD_vb_sast_tool@main
+  with:
+    scan-path: './src/vb_code'           # Directory to scan
+    rules-path: './custom_rules.yaml'     # Optional: custom rules file
+    sarif-output: 'vb-results.sarif.json' # Optional: custom output path
+    upload-sarif: 'true'                  # Optional: auto-upload to Code Scanning (default: true)
+```
+
+### Action Inputs
+
+| Input | Description | Required | Default |
+|-------|-------------|----------|---------|
+| `scan-path` | Path to the directory containing VB/VBA files to scan | Yes | `.` |
+| `rules-path` | Path to a custom rules YAML file | No | Built-in rules |
+| `sarif-output` | Path where the SARIF output file should be saved | No | `vb_findings.sarif.json` |
+| `upload-sarif` | Whether to automatically upload SARIF results to GitHub Code Scanning | No | `true` |
+
+### Action Outputs
+
+| Output | Description |
+|--------|-------------|
+| `sarif-file` | Path to the generated SARIF file |
+| `findings-count` | Number of findings detected |
+
+### Viewing Results
+
+Once the action runs and uploads the SARIF file, you can view the security findings in:
+- **GitHub Security Tab**: Navigate to the "Security" tab → "Code scanning" in your repository
+- **Pull Request Annotations**: Security issues will appear as annotations on pull requests
+- **SARIF File**: Download the artifact containing the SARIF file for local analysis
+
+## Installation (Standalone Usage)
+
+For using the tool outside of GitHub Actions, you can install it as a Python package.
 
 ### Prerequisites
 - Python 3.8 or higher
@@ -39,7 +107,7 @@ cd vb_sast_tool
 poetry install
 ```
 
-## Usage
+## Standalone Usage
 
 After installation, you can run the tool using the `vb-scan` command:
 
@@ -116,3 +184,21 @@ To add a rule to the YAML file, use the following format:
 ```
 
 **Note:** Use `>-` for the pattern field to ensure the pattern string doesn't include trailing newlines that could cause regex matching issues.
+
+## Publishing to GitHub Marketplace
+
+This action is available on the GitHub Marketplace. Once published, users can easily discover and integrate it into their workflows.
+
+### For Maintainers: Publishing Updates
+
+1. Create a new release with a semantic version tag (e.g., `v1.0.0`)
+2. Use major version tags (e.g., `v1`) to allow users to get automatic updates
+3. Update the release notes to describe changes
+
+### For Users: Using from Marketplace
+
+Once published, users can find this action in the GitHub Marketplace by searching for "QaD VB SAST Scanner" or browsing the Security category.
+
+## License
+
+See the [LICENSE](LICENSE) file for details.

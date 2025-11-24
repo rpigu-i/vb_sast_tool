@@ -1,0 +1,35 @@
+name: VB Security Scan Example
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:  # Allow manual trigger
+
+permissions:
+  contents: read
+  security-events: write  # Required for uploading SARIF to Code Scanning
+
+jobs:
+  vb-sast-scan:
+    runs-on: ubuntu-latest
+    name: Scan VB/VBA Code for Security Issues
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Run QaD VB SAST Scanner
+        uses: ./  # Use the action from this repository
+        with:
+          scan-path: './examples/vb_exports'
+          sarif-output: 'vb_findings.sarif.json'
+          upload-sarif: 'true'
+      
+      - name: Upload SARIF as artifact (optional)
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: vb-sarif-results
+          path: vb_findings.sarif.json

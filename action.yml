@@ -1,0 +1,95 @@
+name: 'QaD VB SAST Scanner'
+description: 'Quick and Dirty Visual Basic/VBA SAST scanner that outputs SARIF results for GitHub Advanced Security'
+author: 'rpigu-i'
+
+branding:
+  icon: 'shield'
+  color: 'blue'
+
+inputs:
+  scan-path:
+    description: 'Path to the directory containing VB/VBA files to scan'
+    required: true
+    default: '.'
+  rules-path:
+    description: 'Path to the rules YAML file (default: uses built-in rules)'
+    required: false
+    default: ''
+  sarif-output:
+    description: 'Path where the SARIF output file should be saved'
+    required: false
+    default: 'vb_findings.sarif.json'
+  upload-sarif:
+    description: 'Whether to automatically upload SARIF results to GitHub Code Scanning (requires security-events: write permission)'
+    required: false
+    default: 'true'
+
+outputs:
+  sarif-file:
+    description: 'Path to the generated SARIF file'
+    value: ${{ steps.scan.outputs.sarif-file }}
+  findings-count:
+    description: 'Number of findings detected'
+    value: ${{ steps.scan.outputs.findings-count }}
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+    
+    - name: Install dependencies
+      shell: bash
+      run: |
+        pip install pyyaml
+    
+    - name: Determine rules path
+      id: rules
+      shell: bash
+      run: |
+        if [ -n "${{ inputs.rules-path }}" ]; then
+          echo "path=${{ inputs.rules-path }}" >> $GITHUB_OUTPUT
+        else
+          echo "path=${{ github.action_path }}/rules/rules.yaml" >> $GITHUB_OUTPUT
+        fi
+    
+    - name: Run VB SAST Scanner
+      id: scan
+      shell: bash
+      run: |
+        # Set PYTHONPATH to include the src directory
+        export PYTHONPATH="${{ github.action_path }}/src:$PYTHONPATH"
+        
+        # Run the scanner
+        python3 "${{ github.action_path }}/src/vb_sast_tool/scan_vb_vulnerabilities.py" \
+          "${{ inputs.scan-path }}" \
+          "${{ steps.rules.outputs.path }}" \
+          --sarif "${{ inputs.sarif-output }}"
+        
+        # Output the SARIF file path
+        echo "sarif-file=${{ inputs.sarif-output }}" >> $GITHUB_OUTPUT
+        
+        # Count findings in the SARIF file
+        if [ -f "${{ inputs.sarif-output }}" ]; then
+          # Use jq if available, otherwise fall back to Python
+          if command -v jq &> /dev/null; then
+            findings_count=$(jq '.runs[0].results | length' "${{ inputs.sarif-output }}")
+          else
+            findings_count=$(python3 -c "import json; data=json.load(open('${{ inputs.sarif-output }}')); print(len(data['runs'][0]['results']) if 'runs' in data and len(data['runs']) > 0 else 0)")
+          fi
+          echo "findings-count=$findings_count" >> $GITHUB_OUTPUT
+          echo "::notice::VB SAST Scanner found $findings_count potential issues"
+        else
+          echo "findings-count=0" >> $GITHUB_OUTPUT
+          echo "::warning::SARIF file was not generated"
+        fi
+    
+    - name: Upload SARIF file to GitHub Code Scanning
+      if: inputs.upload-sarif == 'true'
+      # Using @v3 tag for stability. Consider pinning to specific SHA for production use.
+      uses: github/codeql-action/upload-sarif@v3
+      with:
+        sarif_file: ${{ inputs.sarif-output }}
+        category: vb-sast-scanner

@@ -5,7 +5,6 @@ SARIF Generator Module
 Handles the generation of SARIF (Static Analysis Results Interchange Format)
 output for vulnerability findings.
 """
-from datetime import datetime
 
 # Mapping from internal severity levels to SARIF levels
 SEVERITY_TO_SARIF = {
@@ -73,14 +72,12 @@ def build_sarif(findings, rules, tool_name="VB Vulnerability Scanner"):
                 "tool": {
                     "driver": {
                         "name": tool_name,
-                        "informationUri": "https://example.local/vb-scanner",
+                        "version": "0.2.0",
+                        "informationUri": "https://github.com/rpigu-i/QaD_vb_sast_tool",
                         "rules": sarif_rules
                     }
                 },
-                "results": sarif_results,
-                "invocation": {
-                    "timestamp": datetime.utcnow().isoformat() + "Z"
-                }
+                "results": sarif_results
             }
         ]
     }
