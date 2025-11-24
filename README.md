@@ -184,3 +184,21 @@ To add a rule to the YAML file, use the following format:
 ```
 
 **Note:** Use `>-` for the pattern field to ensure the pattern string doesn't include trailing newlines that could cause regex matching issues.
+
+## Publishing to GitHub Marketplace
+
+This action is available on the GitHub Marketplace. Once published, users can easily discover and integrate it into their workflows.
+
+### For Maintainers: Publishing Updates
+
+1. Create a new release with a semantic version tag (e.g., `v1.0.0`)
+2. Use major version tags (e.g., `v1`) to allow users to get automatic updates
+3. Update the release notes to describe changes
+
+### For Users: Using from Marketplace
+
+Once published, users can find this action in the GitHub Marketplace by searching for "QaD VB SAST Scanner" or browsing the Security category.
+
+## License
+
+See the [LICENSE](LICENSE) file for details.

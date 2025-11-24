@@ -73,7 +73,12 @@ runs:
         
         # Count findings in the SARIF file
         if [ -f "${{ inputs.sarif-output }}" ]; then
-          findings_count=$(python3 -c "import json; data=json.load(open('${{ inputs.sarif-output }}')); print(len(data['runs'][0]['results']) if 'runs' in data and len(data['runs']) > 0 else 0)")
+          # Use jq if available, otherwise fall back to Python
+          if command -v jq &> /dev/null; then
+            findings_count=$(jq '.runs[0].results | length' "${{ inputs.sarif-output }}")
+          else
+            findings_count=$(python3 -c "import json; data=json.load(open('${{ inputs.sarif-output }}')); print(len(data['runs'][0]['results']) if 'runs' in data and len(data['runs']) > 0 else 0)")
+          fi
           echo "findings-count=$findings_count" >> $GITHUB_OUTPUT
           echo "::notice::VB SAST Scanner found $findings_count potential issues"
         else
@@ -83,6 +88,7 @@ runs:
     
     - name: Upload SARIF file to GitHub Code Scanning
       if: inputs.upload-sarif == 'true'
+      # Using @v3 tag for stability. Consider pinning to specific SHA for production use.
       uses: github/codeql-action/upload-sarif@v3
       with:
         sarif_file: ${{ inputs.sarif-output }}
