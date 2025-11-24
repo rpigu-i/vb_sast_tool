@@ -73,7 +73,8 @@ def build_sarif(findings, rules, tool_name="VB Vulnerability Scanner"):
                 "tool": {
                     "driver": {
                         "name": tool_name,
-                        "informationUri": "https://example.local/vb-scanner",
+                        "version": "0.2.0",
+                        "informationUri": "https://github.com/rpigu-i/QaD_vb_sast_tool",
                         "rules": sarif_rules
                     }
                 },
